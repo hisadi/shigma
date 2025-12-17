@@ -18,11 +18,10 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-// --- Komponen Event Booking (Dioptimalkan) ---
+// --- Komponen Event Booking ---
 const EventBooking = () => {
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
     date: "",
     phone: "",
   });
@@ -30,21 +29,18 @@ const EventBooking = () => {
 
   useEffect(() => {
     if (formData.date) {
-      // Simulate varying quota levels (for demo purposes)
       setQuota(Math.floor(Math.random() * 15) + 1);
     }
   }, [formData.date]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Construct Whatsapp message
     const message =
       `Halo Admin Shema Agri Mandiri, saya ingin booking tiket Event Tanam & Petik Sayur.%0A%0A` +
       `Nama: ${formData.name}%0A` +
       `Tanggal: ${formData.date}%0A` +
       `No. HP: ${formData.phone}`;
 
-    // Replace with actual WhatsApp number
     window.open(`https://wa.me/6281234567890?text=${message}`, "_blank");
   };
 
@@ -52,7 +48,6 @@ const EventBooking = () => {
     <section id="event" className="py-16 bg-lightBg border-b">
       <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row items-center gap-8">
-          {/* Left: Event Details */}
           <div className="lg:w-1/2 mb-6 lg:mb-0">
             <h2 className="text-3xl font-bold text-darkGreen mb-4">
               Event: Tanam & Petik Sayur
@@ -79,7 +74,6 @@ const EventBooking = () => {
             </div>
           </div>
 
-          {/* Right: Booking Form */}
           <div className="lg:w-1/2 w-full">
             <form
               onSubmit={handleSubmit}
@@ -138,20 +132,34 @@ const EventBooking = () => {
 const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // Mencegah scroll saat menu terbuka
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [isMenuOpen]);
+
   return (
     <div className="font-sans text-gray-800 bg-white antialiased">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <a href="#" className="text-2xl font-bold text-primary">
+      <nav className="sticky top-0 z-50 bg-white shadow-sm h-16 flex items-center">
+        <div className="container mx-auto px-4 w-full flex justify-between items-center">
+          {/* Logo */}
+          <a href="#" className="text-2xl font-bold text-primary z-50">
             Shema Agri Mandiri
           </a>
+
+          {/* Hamburger Button (Mobile) */}
           <button
-            className="lg:hidden"
+            className="lg:hidden text-gray-600 focus:outline-none z-50 relative"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            {isMenuOpen ? <X /> : <Menu />}
+            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
+
+          {/* Desktop Menu */}
           <ul className="hidden lg:flex items-center space-x-8 font-medium">
             <li>
               <a href="#home" className="hover:text-primary transition">
@@ -183,6 +191,50 @@ const App = () => {
             </li>
           </ul>
         </div>
+
+        {/* Mobile Menu Overlay (Fullscreen / Sidebar) */}
+        <div
+          className={`fixed inset-0 bg-white z-40 flex flex-col justify-center items-center space-y-8 text-xl font-medium transition-transform duration-300 lg:hidden ${
+            isMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+          style={{ top: "0", height: "100vh", width: "100vw" }}
+        >
+          <a
+            href="#home"
+            onClick={() => setIsMenuOpen(false)}
+            className="hover:text-primary"
+          >
+            Home
+          </a>
+          <a
+            href="#products"
+            onClick={() => setIsMenuOpen(false)}
+            className="hover:text-primary"
+          >
+            Our Products
+          </a>
+          <a
+            href="#event"
+            onClick={() => setIsMenuOpen(false)}
+            className="hover:text-primary"
+          >
+            Event
+          </a>
+          <a
+            href="#process"
+            onClick={() => setIsMenuOpen(false)}
+            className="hover:text-primary"
+          >
+            Process
+          </a>
+          <a
+            href="#contact"
+            onClick={() => setIsMenuOpen(false)}
+            className="bg-primary text-white px-8 py-3 rounded-full hover:bg-darkGreen transition"
+          >
+            Get a Quote
+          </a>
+        </div>
       </nav>
 
       {/* Hero */}
@@ -192,14 +244,14 @@ const App = () => {
             <img
               src="/asset/background.jpg"
               alt="Hero"
-              className="rounded-2xl shadow-2xl w-full h-[400px] object-cover"
+              className="rounded-2xl shadow-2xl w-full h-[300px] sm:h-[400px] object-cover"
             />
           </div>
-          <div className="lg:w-1/2">
-            <h1 className="text-5xl font-bold text-darkGreen mb-6 leading-tight">
+          <div className="lg:w-1/2 text-center lg:text-left">
+            <h1 className="text-4xl sm:text-5xl font-bold text-darkGreen mb-6 leading-tight">
               From Local Fields to Global Tables
             </h1>
-            <p className="text-lg text-gray-600 mb-8">
+            <p className="text-base sm:text-lg text-gray-600 mb-8">
               Penyedia sayuran segar berkualitas tinggi dengan standar ekspor
               internasional langsung dari petani terbaik.
             </p>
@@ -220,34 +272,55 @@ const App = () => {
             Our Premium Products
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden border">
-              <img
-                src="/asset/kubis.jpeg"
-                className="w-full h-64 object-cover"
-                alt="Kubis"
-              />
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden border group hover:shadow-2xl transition">
+              <div className="h-64 overflow-hidden">
+                <img
+                  src="/asset/kubis.jpeg"
+                  className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                  alt="Kubis"
+                />
+              </div>
               <div className="p-6">
-                <h5 className="font-bold text-xl">Green Cabbage</h5>
+                <h5 className="font-bold text-xl mb-2 text-darkGreen">
+                  Green Cabbage
+                </h5>
+                <p className="text-gray-500 text-sm">
+                  Segar, padat, dan berkualitas tinggi.
+                </p>
               </div>
             </div>
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden border">
-              <img
-                src="/asset/sawi.jpeg"
-                className="w-full h-64 object-cover"
-                alt="Sawi"
-              />
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden border group hover:shadow-2xl transition">
+              <div className="h-64 overflow-hidden">
+                <img
+                  src="/asset/sawi.jpeg"
+                  className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                  alt="Sawi"
+                />
+              </div>
               <div className="p-6">
-                <h5 className="font-bold text-xl">Napa Cabbage</h5>
+                <h5 className="font-bold text-xl mb-2 text-darkGreen">
+                  Napa Cabbage
+                </h5>
+                <p className="text-gray-500 text-sm">
+                  Tekstur renyah pilihan terbaik.
+                </p>
               </div>
             </div>
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden border">
-              <img
-                src="/asset/jagung.jpg"
-                className="w-full h-64 object-cover"
-                alt="Jagung"
-              />
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden border group hover:shadow-2xl transition">
+              <div className="h-64 overflow-hidden">
+                <img
+                  src="/asset/jagung.jpg"
+                  className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                  alt="Jagung"
+                />
+              </div>
               <div className="p-6">
-                <h5 className="font-bold text-xl">Sweet Corn</h5>
+                <h5 className="font-bold text-xl mb-2 text-darkGreen">
+                  Sweet Corn
+                </h5>
+                <p className="text-gray-500 text-sm">
+                  Manis alami, dipetik saat matang sempurna.
+                </p>
               </div>
             </div>
           </div>
@@ -273,7 +346,9 @@ const App = () => {
                   className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
                 />
               </div>
-              <h5 className="text-lg font-bold mb-2">01. Harvesting</h5>
+              <h5 className="text-lg font-bold mb-2 text-darkGreen">
+                01. Harvesting
+              </h5>
               <p className="text-sm text-gray-500">Pemanenan selektif.</p>
             </div>
             <div className="text-center group">
@@ -284,7 +359,9 @@ const App = () => {
                   className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
                 />
               </div>
-              <h5 className="text-lg font-bold mb-2">02. Sorting</h5>
+              <h5 className="text-lg font-bold mb-2 text-darkGreen">
+                02. Sorting
+              </h5>
               <p className="text-sm text-gray-500">
                 Pemilihan kualitas grade A.
               </p>
@@ -297,7 +374,9 @@ const App = () => {
                   className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
                 />
               </div>
-              <h5 className="text-lg font-bold mb-2">03. Packaging</h5>
+              <h5 className="text-lg font-bold mb-2 text-darkGreen">
+                03. Packaging
+              </h5>
               <p className="text-sm text-gray-500">
                 Pengemasan aman & higienis.
               </p>
@@ -310,7 +389,9 @@ const App = () => {
                   className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
                 />
               </div>
-              <h5 className="text-lg font-bold mb-2">04. Shipping</h5>
+              <h5 className="text-lg font-bold mb-2 text-darkGreen">
+                04. Shipping
+              </h5>
               <p className="text-sm text-gray-500">Pengiriman global.</p>
             </div>
           </div>
@@ -336,7 +417,7 @@ const App = () => {
                     <input
                       type="text"
                       placeholder="John"
-                      className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#567746]/50"
+                      className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
                     />
                   </div>
                   <div>
@@ -346,7 +427,7 @@ const App = () => {
                     <input
                       type="text"
                       placeholder="Doe"
-                      className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#567746]/50"
+                      className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
                     />
                   </div>
                 </div>
@@ -357,7 +438,7 @@ const App = () => {
                   <input
                     type="email"
                     placeholder="john@example.com"
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#567746]/50"
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
                 <div>
@@ -367,7 +448,7 @@ const App = () => {
                   <input
                     type="text"
                     placeholder="Product Inquiry"
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#567746]/50"
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
                   />
                 </div>
                 <div>
@@ -377,12 +458,12 @@ const App = () => {
                   <textarea
                     rows={5}
                     placeholder="Write your message here..."
-                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#567746]/50"
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
                   ></textarea>
                 </div>
                 <button
                   type="button"
-                  className="bg-[#567746] text-white px-8 py-3 rounded-full hover:bg-[#3d5532] transition font-medium"
+                  className="bg-primary text-white px-8 py-3 rounded-full hover:bg-darkGreen transition font-medium w-full sm:w-auto"
                 >
                   Send Message
                 </button>
@@ -391,7 +472,7 @@ const App = () => {
 
             {/* Info */}
             <div className="lg:w-1/3 bg-lightBg p-8 rounded-2xl h-fit">
-              <h4 className="text-xl font-bold mb-6 text-[#3d5532]">
+              <h4 className="text-xl font-bold mb-6 text-darkGreen">
                 Get in Touch
               </h4>
 
