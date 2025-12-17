@@ -403,9 +403,9 @@ const App = () => {
                   <div>
                     <h6 className="font-semibold text-gray-900">Address</h6>
                     <p className="text-gray-500 text-sm leading-relaxed">
-                      Jl. Agropolitan No. 123
+                      Pasuruan
                       <br />
-                      Jawa Barat, Indonesia
+                      Jawa Timur, Indonesia
                     </p>
                   </div>
                 </div>
